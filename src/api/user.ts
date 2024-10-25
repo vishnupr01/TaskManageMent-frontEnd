@@ -28,7 +28,7 @@ export const userLogin = async (data: LoginFormData) => {
   try {
     console.log("checking data", data);
 
-    const response = await Api.post(userRoutes.loginUser, { data })
+    const response = await Api.post(userRoutes.loginUser,  data )
     return response
   } catch (error) {
     throw error
