@@ -93,7 +93,7 @@ const ParentComponent: React.FC = () => {
           {selectedForm === "register" && <Register setChild={handleSelectedForm} setEmail={handleEmail} />}
           {selectedForm === "managerLogin" && <ManagerLogin setChild={handleSelectedForm} setEmail={handleEmail} />}
           {selectedForm === "employeeLogin" && <EmployeeLogin setChild={handleSelectedForm} setEmail={handleEmail} />}
-          {selectedForm === "otp" && <Otp email={email} />}
+          {selectedForm === "otp" && <Otp email={email} onSuccess={handleSelectedForm} />}
         </div>
       </div>
     </div>

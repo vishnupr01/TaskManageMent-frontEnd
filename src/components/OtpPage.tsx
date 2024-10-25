@@ -10,8 +10,10 @@ import toast from 'react-hot-toast';
 // import { Delete } from '../../redux/slices/forgotEmailSlice';
 
 
-
-const Otp: React.FC<otpData> = ({ email }) => {
+interface OtpProps extends otpData {
+  onSuccess: (data: any) => void; // Add the callback prop type
+}
+const Otp: React.FC<OtpProps> = ({ email,onSuccess }) => {
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const navigate = useNavigate();
   // const location = useLocation();
@@ -65,7 +67,7 @@ const Otp: React.FC<otpData> = ({ email }) => {
       const response = await verifyOtp(email, otp);
       if (response.data.status === "success") {
         toast.success('successsss')
-        navigate('/login')
+        onSuccess('managerLogin')
       }
     } catch (error: any) {
       if (error.response?.data?.message === "Invalid otp") {

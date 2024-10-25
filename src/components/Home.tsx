@@ -40,14 +40,22 @@ const Home: React.FC = () => {
   const [managerId, setmanagerId] = useState<string>('');
 
   // Filter tasks by the search query
-  const filteredTasks = taskList.filter((task) =>
-    task.assignedTo.some((user) => user.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredTasks = taskList.filter((task) => {
+    const isAssignedToUser = task.assignedTo.some((user) => 
+      user.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  
+    // Include tasks that are either assigned to users or have no assigned users for managers
+    return isAssignedToUser || (userRole === 'Manager' && task.assignedTo.length === 0);
+  });
 
   // Handle event creation
   const handleNewTask = (newTask: Task) => {
     setTaskList([...taskList, newTask]); // Add new task to the list
   };
+  // const handleNewTask = (newTask: Task) => {
+  //   setTaskList(prevTasks => [...prevTasks, newTask]); // Add new task to the list using functional state update
+  // };
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -224,6 +232,7 @@ const Home: React.FC = () => {
         employees={employees}
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
+        onAddTask={handleNewTask}
       />
 
       {/* Task Detail Modal */}

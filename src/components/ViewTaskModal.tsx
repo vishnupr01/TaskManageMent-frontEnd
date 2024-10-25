@@ -21,6 +21,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onDelete,
   userRole,
   unassignedEmployees,
+  
 }) => {
   const [editedTask, setEditedTask] = useState<Task | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -93,7 +94,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       errors.title = "Title is required";
     }
 
-    if (editedTask && editedTask.start >= editedTask.end) {
+    if (editedTask && editedTask.start > editedTask.end) {
       errors.date = "End date must be later than start date";
     }
 

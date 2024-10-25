@@ -15,10 +15,11 @@ interface TaskModalProps {
   employees: Employee[]; // List of available employees
   currentUser: string;   // Name of the current user
   tasks?: Task[];
-  departmentId: string   // Optional: List of tasks to view
+  departmentId: string
+  onAddTask: (newTask: Task) => void;  // Optional: List of tasks to view
 }
 
-const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, employees, departmentId, currentUser, tasks }) => {
+const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, employees, departmentId, currentUser, tasks, onAddTask }) => {
   const [title, setTitle] = useState("");
   const [start, setStart] = useState<Date>(new Date());
   const [end, setEnd] = useState<Date>(new Date());
@@ -58,18 +59,25 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, employees, depar
       allDay: false,
       assignedTo,
       createdBy: currentUser,
-      departmentId: departmentId // Set the current user as the creator of the task
+      departmentId: departmentId,
+      // Set the current user as the creator of the task
     };
 
     try {
       // Send the task to the backend API
       console.log("hey newTask", newTask);
-     console.log("start date:",start);
-     console.log("end date:",end);
-     
+      console.log("start date:", start);
+      console.log("end date:", end);
+
       const response = await createTask(newTask)
       console.log(response);
-      // Replace with your actual endpoint
+      onAddTask(newTask)
+      setTitle("");
+      setStart(new Date());
+      setEnd(new Date());
+      setAssignedTo([]);
+      setAssignToSelf(false);
+      
       onClose(); // Close modal after saving
     } catch (err) {
       console.log(err);
