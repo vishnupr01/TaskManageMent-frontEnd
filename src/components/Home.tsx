@@ -35,7 +35,8 @@ const Home: React.FC = () => {
   const [isDetailModalOpen, setDetailModalOpen] = useState(false);
   const [tasksForSelectedDate, setTasksForSelectedDate] = useState<Task[]>([]);
   const { isUser }: any = useContext(AuthContext);
-  const [departmentId, setDepartmentId] = useState<string>('')
+  const [departmentId, setDepartmentId] = useState<string>('');
+  const [userRole, setUserRole] = useState<string>(''); // User role
 
   // Filter tasks by the search query
   const filteredTasks = taskList.filter((task) =>
@@ -49,11 +50,12 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const fetchUserDetails = async () => {
-      const { userId, departmentId } = await isUser();
-      console.log("User ID:", userId, "Department ID:", departmentId);
+      const { userId, departmentId, role } = await isUser();
+      console.log("User ID:", userId, "Department ID:", departmentId, "Role:", role);
       if (userId) {
         setCurrentUser(userId);
         setDepartmentId(departmentId);
+        setUserRole(role); // Set user role
         await fetchAllTasks(userId);
         await fetchEmployess(userId);
       }
@@ -69,7 +71,7 @@ const Home: React.FC = () => {
     } catch (error) {
       throw error;
     }
-  }
+  };
 
   const fetchAllTasks = async (userId: any) => {
     try {
@@ -91,8 +93,7 @@ const Home: React.FC = () => {
     } catch (error) {
       throw error;
     }
-  }
-  console.log("mytasklist");
+  };
 
   // Handle date click
   const handleDateClick = (slotInfo: SlotInfo) => {
@@ -114,12 +115,10 @@ const Home: React.FC = () => {
   // Handle deleting a task
   const handleDeleteTask = async (taskId: string) => {
     console.log("task id", taskId);
-    const response = await deleteTask(taskId)
+    const response = await deleteTask(taskId);
     console.log(response, "response after deletion");
     setTaskList((prev) => prev.filter((task) => task._id !== taskId));
-     setDetailModalOpen(false)
-
-
+    setDetailModalOpen(false);
   };
 
   // Get tasks for selected date
@@ -139,12 +138,14 @@ const Home: React.FC = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="p-2 border rounded shadow-md"
         />
-        <button
-          onClick={() => setModalOpen(true)} // Open modal on click
-          className="ml-4 p-2 bg-blue-600 text-white rounded"
-        >
-          Create Task
-        </button>
+        {userRole === 'manager' && ( // Only show button if user is a manager
+          <button
+            onClick={() => setModalOpen(true)} // Open modal on click
+            className="ml-4 p-2 bg-blue-600 text-white rounded"
+          >
+            Create Task
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -202,9 +203,6 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Display tasks for selected day */}
-
-
       {/* Modal for creating new tasks */}
       <TaskModal
         currentUser={currentUser}
@@ -212,7 +210,6 @@ const Home: React.FC = () => {
         employees={employees}
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
-
       />
 
       {/* Task Detail Modal */}

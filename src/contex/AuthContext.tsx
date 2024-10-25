@@ -38,6 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return {
           userId: response.data.user.id,
           departmentId: response.data.departmentId,
+           role:response.data.user.role
         };
       }
       return { userId: null, departmentId: null };
