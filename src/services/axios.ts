@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 const Api = axios.create({
-  baseURL: 'http://taskmanagent.vkart.fun',
+  baseURL: 'http://taskmanagement.vkart.fun',
   withCredentials: true,
 });
 
