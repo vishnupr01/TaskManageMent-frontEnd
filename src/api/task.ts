@@ -62,4 +62,15 @@ export const taskAssigned = async (taskId: string) => {
     throw error;
   }
 };
+export const editTask = async (taskId: string, taskData: Task) => {
+  try {
+    const response = await Api.put(taskRoutes.editTask(taskId), {
+      taskData
+    });
+    return response; // This could return the updated task details
+  } catch (error) {
+    console.error("Error editing task:", error);
+    throw error;
+  }
+};
 

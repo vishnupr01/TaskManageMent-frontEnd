@@ -34,12 +34,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const isUser = async () => {
     try {
       const response = await isUserVerifed();
+      console.log(response,"heyyy");
+      
       if (response.data && response.data.user) {
         return {
           userId: response.data.user.id,
           departmentId: response.data.departmentId,
            role:response.data.user.role,
-           managerId:response.data.user?.managerId
+           managerId:response.data.user?.managerId,
+           name:response.data.user.name
         };
       }
       return { userId: null, departmentId: null };

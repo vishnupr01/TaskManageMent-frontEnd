@@ -74,7 +74,7 @@ const Home: React.FC = () => {
       throw error;
     }
   };
- 
+
 
   const fetchAllTasks = async (userId: any) => {
     try {
@@ -98,7 +98,13 @@ const Home: React.FC = () => {
       }));
       console.log("fetchedTasks", fetchedTasks);
 
-      setTaskList(fetchedTasks); // Set the fetched tasks into taskList
+      if (userRole === 'Employee') {
+        const userTasks = fetchedTasks.filter((task: Task) =>
+          task.assignedTo.includes(userId))
+        setTaskList(userTasks); // Set only user's tasks into taskList
+      } else {
+        setTaskList(fetchedTasks); // Set all tasks for managers
+      } // Set the fetched tasks into taskList
     } catch (error) {
       // throw error;
     }
@@ -145,13 +151,7 @@ const Home: React.FC = () => {
       {/* Header with small calendar and search bar */}
       <div className="flex justify-between items-center mb-5">
         <h1 className="text-3xl font-bold text-gray-800">Task Calendar</h1>
-        <input
-          type="text"
-          placeholder="Search by person"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="p-2 border rounded shadow-md"
-        />
+
         {userRole === 'Manager' && ( // Only show button if user is a manager
           <button
             onClick={() => setModalOpen(true)} // Open modal on click
@@ -228,7 +228,7 @@ const Home: React.FC = () => {
 
       {/* Task Detail Modal */}
       <TaskDetailModal
-       unassignedEmployees={employees}
+        unassignedEmployees={employees}
         isOpen={isDetailModalOpen}
         onClose={() => setDetailModalOpen(false)}
         tasks={tasksForSelectedDate}

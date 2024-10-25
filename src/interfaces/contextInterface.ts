@@ -4,6 +4,7 @@ export default interface AuthContextType {
   login: (newToken: string) => void;
   logout: () => void;
   loading: boolean;
-  isUser: () => any
+  isUser: () => any,
+
  
 }
