@@ -8,6 +8,7 @@ interface TaskDetailModalProps {
   onEdit: (updatedTask: Task) => void;
   onDelete: (taskId: string) => void;
   employees: string[];
+  userRole:string
 
 
 }
@@ -19,6 +20,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onEdit,
   onDelete,
   employees,
+  userRole
 }) => {
   const [editedTask, setEditedTask] = useState<Task | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -67,6 +69,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     setError(errors);
     return Object.keys(errors).length === 0;
   };
+console.log(userRole,"userRole");
 
   if (!isOpen) return null;
 
@@ -81,7 +84,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             {tasks.map((task) => (
               <li key={task._id} className="mb-2">
                 <strong>{task.title}</strong> - {task.start.toLocaleString()} to {task.end.toLocaleString()}
-                {!editedTask &&
+                {!editedTask &&!editedTask && userRole === "Manager" && 
                   <div className="mt-2">
                     <button
                       onClick={() => handleEditTask(task._id)}

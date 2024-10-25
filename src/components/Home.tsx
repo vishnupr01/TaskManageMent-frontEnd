@@ -37,6 +37,7 @@ const Home: React.FC = () => {
   const { isUser }: any = useContext(AuthContext);
   const [departmentId, setDepartmentId] = useState<string>('');
   const [userRole, setUserRole] = useState<string>(''); // User role
+  const [managerId, setmanagerId] = useState<string>('');
 
   // Filter tasks by the search query
   const filteredTasks = taskList.filter((task) =>
@@ -50,12 +51,13 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const fetchUserDetails = async () => {
-      const { userId, departmentId, role } = await isUser();
-      console.log("User ID:", userId, "Department ID:", departmentId, "Role:", role);
+      const { userId, departmentId, role, managerId } = await isUser();
+      console.log("User ID:", userId, "Department ID:", departmentId, "Role:", role, "managerID:", managerId);
       if (userId) {
         setCurrentUser(userId);
         setDepartmentId(departmentId);
         setUserRole(role); // Set user role
+        setmanagerId(managerId)
         await fetchAllTasks(userId);
         await fetchEmployess(userId);
       }
@@ -75,7 +77,13 @@ const Home: React.FC = () => {
 
   const fetchAllTasks = async (userId: any) => {
     try {
-      const response = await getAllTasks(userId as string);
+      let response: any = null
+      if (userRole === 'Manager') {
+         response = await getAllTasks(userId as string);
+      } else {
+         response = await getAllTasks(managerId as string);
+      }
+
       console.log("task list", response);
       const fetchedTasks = response.data.data.map((task: any) => ({
         _id: task._id,
@@ -101,8 +109,12 @@ const Home: React.FC = () => {
     const tasksForDate = filteredTasks.filter((task) =>
       task.start.toDateString() === selectedDate.toDateString()
     );
-    setTasksForSelectedDate(tasksForDate); // Set tasks for selected date
-    setDetailModalOpen(true); // Open detail modal
+    setTasksForSelectedDate(tasksForDate);
+    // Set tasks for selected date
+    if (userRole === "Manager") {
+      setDetailModalOpen(true);
+    }
+    // Open detail modal
   };
 
   // Handle editing a task
@@ -125,6 +137,7 @@ const Home: React.FC = () => {
   const tasksForSelectedDateFiltered = filteredTasks.filter((task) =>
     task.start.toDateString() === selectedDate.toDateString()
   );
+console.log(managerId,"managers");
 
   return (
     <div className="container mx-auto mt-10">
@@ -138,7 +151,7 @@ const Home: React.FC = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="p-2 border rounded shadow-md"
         />
-        {userRole === 'manager' && ( // Only show button if user is a manager
+        {userRole === 'Manager' && ( // Only show button if user is a manager
           <button
             onClick={() => setModalOpen(true)} // Open modal on click
             className="ml-4 p-2 bg-blue-600 text-white rounded"
@@ -220,6 +233,7 @@ const Home: React.FC = () => {
         tasks={tasksForSelectedDate}
         onEdit={handleEditTask}
         onDelete={handleDeleteTask}
+        userRole={userRole}
       />
     </div>
   );
