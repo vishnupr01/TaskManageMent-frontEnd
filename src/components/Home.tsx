@@ -74,14 +74,15 @@ const Home: React.FC = () => {
       throw error;
     }
   };
+ 
 
   const fetchAllTasks = async (userId: any) => {
     try {
       let response: any = null
       if (userRole === 'Manager') {
-         response = await getAllTasks(userId as string);
+        response = await getAllTasks(userId as string);
       } else {
-         response = await getAllTasks(managerId as string);
+        response = await getAllTasks(managerId as string);
       }
 
       console.log("task list", response);
@@ -137,7 +138,7 @@ const Home: React.FC = () => {
   const tasksForSelectedDateFiltered = filteredTasks.filter((task) =>
     task.start.toDateString() === selectedDate.toDateString()
   );
-console.log(managerId,"manager");
+  console.log(managerId, "manager");
 
   return (
     <div className="container mx-auto mt-10">
@@ -227,7 +228,7 @@ console.log(managerId,"manager");
 
       {/* Task Detail Modal */}
       <TaskDetailModal
-        employees={employees}
+       unassignedEmployees={employees}
         isOpen={isDetailModalOpen}
         onClose={() => setDetailModalOpen(false)}
         tasks={tasksForSelectedDate}

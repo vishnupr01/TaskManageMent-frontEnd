@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Task from "../interfaces/calenderInterface";
+import { taskAssigned } from "../api/task";
 
 interface TaskDetailModalProps {
   isOpen: boolean;
@@ -7,10 +8,8 @@ interface TaskDetailModalProps {
   tasks: Task[];
   onEdit: (updatedTask: Task) => void;
   onDelete: (taskId: string) => void;
-  employees: string[];
-  userRole:string
-
-
+  userRole: string;
+  unassignedEmployees: { _id: string; name: string }[]; // Array of unassigned employee objects
 }
 
 const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
@@ -19,12 +18,13 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   tasks,
   onEdit,
   onDelete,
-  employees,
-  userRole
+  userRole,
+  unassignedEmployees,
 }) => {
   const [editedTask, setEditedTask] = useState<Task | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [error, setError] = useState<{ title?: string; date?: string }>({});
+  const [employees, setEmployees] = useState<any[]>([]);
 
   // Prepopulate the assigned users when a task is selected for editing
   useEffect(() => {
@@ -33,8 +33,21 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     }
   }, [editedTask]);
 
-  const handleEditTask = (task: string) => {
+  const handleEditTask = (task: Task) => {
+    fetchCurrentlyAssigned(task._id);
+    setEditedTask(task);
+    setSelectedUsers(task.assignedTo);
+  };
 
+  const fetchCurrentlyAssigned = async (taskId: any) => {
+    try {
+      console.log("Getting taskId:", taskId);
+      const response = await taskAssigned(taskId);
+      console.log(response.data.data, "Current assigned users");
+      setEmployees(response.data.data);
+    } catch (error) {
+      console.error("Error fetching assigned users:", error);
+    }
   };
 
   const handleSaveEdit = () => {
@@ -51,8 +64,8 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     setSelectedUsers(selectedOptions);
   };
 
-  const handleRemoveAssigned = (employee: string) => {
-    setSelectedUsers((prev) => prev.filter((user) => user !== employee));
+  const handleRemoveAssigned = (employeeId: string) => {
+    setSelectedUsers((prev) => prev.filter((user) => user !== employeeId));
   };
 
   const validateInputs = () => {
@@ -69,9 +82,15 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     setError(errors);
     return Object.keys(errors).length === 0;
   };
-console.log(userRole,"userRole");
+
+  console.log(userRole, "userRole");
 
   if (!isOpen) return null;
+
+  // Filter unassigned employees to exclude those who are already assigned
+  const filteredUnassignedEmployees = unassignedEmployees.filter(
+    (unassigned) => !employees.some((assigned) => assigned._id === unassigned._id)
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
@@ -84,10 +103,10 @@ console.log(userRole,"userRole");
             {tasks.map((task) => (
               <li key={task._id} className="mb-2">
                 <strong>{task.title}</strong> - {task.start.toLocaleString()} to {task.end.toLocaleString()}
-                {!editedTask &&!editedTask && userRole === "Manager" && 
+                {userRole === "Manager" && !editedTask && (
                   <div className="mt-2">
                     <button
-                      onClick={() => handleEditTask(task._id)}
+                      onClick={() => handleEditTask(task)}
                       className="bg-black text-white font-semibold py-1 px-1 rounded transition duration-200 hover:bg-green-600 min-w-[70px] min-h-[20px]"
                     >
                       Edit
@@ -98,8 +117,8 @@ console.log(userRole,"userRole");
                     >
                       Delete
                     </button>
-                  </div>}
-
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -152,14 +171,15 @@ console.log(userRole,"userRole");
               </div>
             </div>
 
+            {/* Currently Assigned Employees */}
             <div className="mb-4">
               <label>Currently Assigned Employees:</label>
-              <div className="border p-2 rounded h-32 overflow-auto"> {/* Set a fixed height and add overflow */}
-                {employees.map((employee) => ( // Use editedTask.assignedTo to display currently assigned employees
-                  <div key={employee} className="flex justify-between items-center mb-1">
-                    <span>{employee}</span>
+              <div className="border p-2 rounded h-32 overflow-auto">
+                {employees.map((employee: any) => (
+                  <div key={employee._id} className="flex justify-between items-center mb-1">
+                    <span>{employee.name}</span>
                     <button
-                      onClick={() => handleRemoveAssigned(employee)}
+                      onClick={() => handleRemoveAssigned(employee._id)}
                       className="text-red-500 ml-2"
                     >
                       Remove
@@ -169,18 +189,18 @@ console.log(userRole,"userRole");
               </div>
             </div>
 
-            {/* Assigned Users */}
+            {/* Assign/Reassign to Employees */}
             <div className="mb-4">
               <label>Assign/Reassign to Employees:</label>
               <select
                 multiple
                 value={selectedUsers}
                 onChange={handleSelectChange}
-                className="p-2 border  w-full h-32"
+                className="p-2 border w-full h-32"
               >
-                {employees.map((employee) => (
-                  <option key={employee} value={employee}>
-                    {employee}
+                {filteredUnassignedEmployees.map((employee) => (
+                  <option key={employee._id} value={employee._id}>
+                    {employee.name}
                   </option>
                 ))}
               </select>

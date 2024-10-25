@@ -23,7 +23,7 @@ export const createTask = async (taskData: Task) => {
     return response;
   } catch (error) {
     console.log(error);
-    
+
     throw error;
   }
 };
@@ -49,3 +49,17 @@ export const deleteTask = async (taskId: string) => {
     throw error;
   }
 };
+export const taskAssigned = async (taskId: string) => {
+  try {
+    const response = await Api.get(taskRoutes.assignedEmployess, {
+      params: {
+        taskId, // Pass managerId as a query parameter
+      },
+    }); // This could be a success message or the deleted task details
+    return response
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    throw error;
+  }
+};
+
