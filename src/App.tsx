@@ -7,6 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import Home from './components/Home';
 import { AuthProvider } from './contex/AuthContext';
 import { ProtectedRoutes } from './protected/Protected';
+import Header from './pages/MainPage';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
           <Routes>
           <Route path='/login' element={<ParentComponent />} />
             <Route path='/' element={<ProtectedRoutes>
-              <Home />
+              <Header/>
             </ProtectedRoutes>} />
             
 

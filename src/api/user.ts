@@ -63,3 +63,12 @@ export const isUserVerifed = async () => {
   }
 
 }
+export const logOutUser= async () => {
+  try {
+    const response = await Api.get(userRoutes.userLogOut)
+    return response
+  } catch (error) {
+    throw error
+  }
+
+}

@@ -99,7 +99,7 @@ const Home: React.FC = () => {
 
       setTaskList(fetchedTasks); // Set the fetched tasks into taskList
     } catch (error) {
-      throw error;
+      // throw error;
     }
   };
 
@@ -137,7 +137,7 @@ const Home: React.FC = () => {
   const tasksForSelectedDateFiltered = filteredTasks.filter((task) =>
     task.start.toDateString() === selectedDate.toDateString()
   );
-console.log(managerId,"managers");
+console.log(managerId,"manager");
 
   return (
     <div className="container mx-auto mt-10">
