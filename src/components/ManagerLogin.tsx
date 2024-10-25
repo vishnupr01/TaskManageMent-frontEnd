@@ -23,6 +23,8 @@ const ManagerLogin: React.FC<RegisterProps> = ({ setChild, setEmail }) => {
       setEmails(data.email); // You can keep this to store the email in state if needed elsewhere
       const managerData = { ...data, role: "Manager" };
       // Add custom role "Manager"
+      console.log("managerData",managerData);
+      
       const response = await userLogin(managerData);
       console.log("Login successful:", response);
 
